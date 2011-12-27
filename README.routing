@@ -1,0 +1,22 @@
+Old app:
+
+/display.do?[uid=XXX]
+  If uid present, shows one user's list
+  If uid not present, shows list of users
+/login.do?username=XXX&password=YYY
+/logout.do
+/buy.do?gid=XXX
+/mailpassword.do?username=XXX
+/register.do?username=XXX&password=YYY
+/edit.do?gid=XXX&action=YYY
+  action is one of: unbuy,edit,delete
+/save.do
+
+
+New app:
+
+/user/:action/:uid
+  action: list (the users), view (one user's list), add, mailpassword
+/gift/:action/:gid
+  action: view, add, buy, unbuy, delete
+/auth

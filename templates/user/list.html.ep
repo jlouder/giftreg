@@ -1,0 +1,9 @@
+% layout 'default';
+% title 'Select a user';
+<h2>Select a user</h2>
+<p>The users are:</p>
+<ul>
+% foreach my $user (@$users) {
+  <li><%= $user->email_address %></li>
+% }
+</ul>

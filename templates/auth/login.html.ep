@@ -1,0 +1,17 @@
+% layout 'default';
+% title 'Login';
+<h2>Login</h2>
+% if( stash('error_message') ) {
+<p><%= stash('error_message') %></p>
+% }
+<form method="post">
+<div>
+  Email address:
+  <input type="text" name="username" />
+</div>
+<div>
+  Password:
+  <input type="password" name="password" />
+</div>
+<input type="submit" />
+</form>
