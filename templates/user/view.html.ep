@@ -1,0 +1,22 @@
+% layout 'default';
+% title "Gifts for " . $user->email_address;
+<p>Here's the list of gifts for <%= $user->email_address %>,
+last updated on <%= $user->last_update_dt %>.</p>
+<table>
+  <tr>
+    <th>Gift</th>
+    <th>Description</th>
+    <th>Available at</th>
+    <th>Priority</th>
+    <th>Buy</th>
+  </tr>
+% foreach my $gift (@$gifts) {
+  <tr>
+    <td><%== $gift->short_desc %></td>
+    <td><%== $gift->long_desc %></td>
+    <td><%== $gift->location %></td>
+    <td><%= $gift->priority_desc %></td>
+    <td><%= $gift->is_bought ? 'already bought' : 'available' %></td>
+  </tr>
+% }
+</table>
