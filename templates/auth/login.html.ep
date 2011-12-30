@@ -2,7 +2,7 @@
 % title 'Login';
 <h2>Login</h2>
 % if( stash('error_message') ) {
-<p><%= stash('error_message') %></p>
+<div class="error_message"><%= stash('error_message') %></div>
 % }
 <form method="post">
 <div>
@@ -13,5 +13,6 @@
   Password:
   <input type="password" name="password" />
 </div>
+<div><%= link_to 'Forgot your password?' => '/password/forgot' %></div>
 <input type="submit" />
 </form>
