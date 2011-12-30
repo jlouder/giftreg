@@ -1,6 +1,8 @@
 package Giftreg;
 use Mojo::Base 'Mojolicious';
 use Mojolicious::Plugin::Database;
+use Giftreg::Auth;
+use Giftreg::DB;
 
 # This method will run once at server start
 sub startup {
@@ -16,6 +18,11 @@ sub startup {
     password => $config->{db}->{password},
   });
 
+  # Overload the connect() method of our DBIx::Class schema, so we don't have
+  # to specify all these arguments each time connect is called.
+  Giftreg::DB->connection(sub { return $self->db(); },
+                          $config->{db}->{options});
+
   # Set up authentication plugin
   $self->plugin('authentication' => {
     load_user     => \&Giftreg::Auth::load_user,
@@ -29,6 +36,11 @@ sub startup {
   $r->route('/login')->to('auth#login');
   $r->route('/logout')->to('auth#logout');
   $r->route('/user/list')->to('user#list');
+  $r->route('/user/view/:uid')->to('user#view');
+
+  $r->route('/password/forgot')->to('password#forgot');
+  $r->route('/password/mailresetlink')->to('password#mailresetlink');
+  $r->route('/password/reset/:secret')->to('password#reset');
 }
 
 1;

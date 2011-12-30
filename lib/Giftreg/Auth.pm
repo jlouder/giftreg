@@ -10,7 +10,7 @@ use Digest::SHA1 qw(sha1_hex);
 sub load_user {
   my ($app, $uid) = @_;
 
-  my $db = Giftreg::DB->connect(sub { return $app->db(); });
+  my $db = Giftreg::DB->connect();
   return $db->resultset('Person')->find($uid);
 }
 
@@ -23,7 +23,7 @@ sub validate_user {
   my ($app, $username, $password, $extradata) = @_;
 
   # Look up this user by name.
-  my $db = Giftreg::DB->connect(sub { return $app->db(); });
+  my $db = Giftreg::DB->connect();
   my @users = $db->resultset('Person')->search({
     email_address => $username
   });
@@ -59,6 +59,21 @@ sub validate_user {
 
   # User has successfully authenticated.
   return $user->person_id();
+}
+
+# SUBROUTINE:  require_login($controller)
+# DESCRIPTION: Controller methods call this function if their action requires
+#              a login. This redirects to the login page if the user is not
+#              already logged in.
+sub require_login {
+  my $self = shift;
+
+  if( $self->user_exists() ) {
+    return;
+  } else {
+    $self->stash( return_to_url => $self->req->url->to_string );
+    $self->redirect_to('/login');
+  }
 }
 
 sub check {

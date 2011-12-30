@@ -1,5 +1,10 @@
 <!DOCTYPE html>
 <html>
-  <head><title><%= title %></title></head>
-  <body><%= content %></body>
+<head>
+<title><%= title %></title>
+<link rel="stylesheet" href="/include/styles.css" type="text/css" />
+</head>
+<body>
+<%= content %>
+</body>
 </html>

@@ -4,6 +4,7 @@
 <p>The users are:</p>
 <ul>
 % foreach my $user (@$users) {
-  <li><%= $user->email_address %></li>
+  <li><%= link_to $user->email_address =>
+                  "/user/view/" . $user->person_id %></li>
 % }
 </ul>
