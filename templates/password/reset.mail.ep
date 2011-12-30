@@ -1,0 +1,11 @@
+% stash subject => 'Password reset';
+% stash type => 'text/html';
+<p>Someone requested the ability to reset your gift registry password. If
+you made this request, click the link below to select a new password:</p>
+
+<p><%= link_to url_for("/password/reset/$secret")->to_abs =>
+               url_for("/password/reset/$secret")->to_abs %></p>
+
+<p>If you didn't make this request, you don't need to do anything. Only
+you received this email, and your password will remain the same unless you
+click on the above link.</p>

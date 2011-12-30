@@ -1,6 +1,7 @@
 package Giftreg;
 use Mojo::Base 'Mojolicious';
 use Mojolicious::Plugin::Database;
+use Mojolicious::Plugin::Mail;
 use Giftreg::Auth;
 use Giftreg::DB;
 
@@ -28,6 +29,9 @@ sub startup {
     load_user     => \&Giftreg::Auth::load_user,
     validate_user => \&Giftreg::Auth::validate_user,
   });
+
+  # Set up mail plugin
+  $self->plugin(mail => $config->{mail});
 
   # Routes
   my $r = $self->routes;

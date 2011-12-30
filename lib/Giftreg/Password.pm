@@ -40,8 +40,11 @@ sub mailresetlink {
     expire_dt => \'sysdate + 4',
   });
 
-  # TODO: mail the reset link!
-
+  # Mail the reset link!
+  $self->stash(secret => $secret);
+  $self->mail(to       => $user->email_address,
+              template => 'password/reset',
+              format   => 'mail');
 }
 
 sub reset {
@@ -60,8 +63,6 @@ sub reset {
   }
 
   $self->stash(email_address => $pwreset->person->email_address);
-
-  # TODO: check the expire date on the secret
 }
 
 1;
