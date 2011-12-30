@@ -1,0 +1,5 @@
+% layout 'default';
+% title 'Password reset';
+<h2>Password reset</h2>
+
+<p>Check your email for a link you can use to reset your password.</p>

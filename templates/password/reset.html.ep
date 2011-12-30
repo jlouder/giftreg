@@ -1,0 +1,22 @@
+% layout 'default';
+% title 'Reset password';
+<h2>Reset password</h2>
+
+% if( stash('error_message') ) {
+<div class="error_message"><%= stash('error_message') %></div>
+% }
+
+<p>Enter the new password for <%= $email_address %> below:</p>
+
+<form action="<%= url_for '/password/reset' %>" method="post">
+<div>
+New password:
+<input type="password" name="password" />
+</div>
+<div>
+Confirm password:
+<input type="password" name="confirm_password" />
+</div>
+<input type="hidden" name="secret" value="<%= $secret %>" />
+<input type="submit" />
+</form>

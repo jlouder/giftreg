@@ -1,0 +1,16 @@
+% layout 'default';
+% title 'Forgot password';
+<h2>Forgot password</h2>
+<p>Enter your email address below:</p>
+
+% if( stash('error_message') ) {
+<div class="error_message"><%= stash('error_message') %></div>
+% }
+
+<form action="<%= url_for '/password/mailresetlink' %>" method="post">
+<div>
+  Email address:
+  <input type="text" name="email_address" />
+</div>
+<input type="submit" />
+</form>

@@ -1,0 +1,6 @@
+% layout 'default';
+% title 'Invalid reset code';
+<h2>Invalid reset code</h2>
+
+<p>The password reset code you used is not valid. You can generate
+<%= link_to 'another reset link' => '/password/forgot' %> to try again.</p>
