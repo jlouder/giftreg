@@ -1,36 +1,34 @@
 package Giftreg::User;
 use Mojo::Base 'Mojolicious::Controller';
 use Giftreg::DB;
+use Giftreg::Auth;
 use Mojolicious::Plugin::Authentication;
-
-sub require_login {
-  my $self = shift;
-
-  if( $self->user_exists() ) {
-    return;
-  } else {
-    $self->stash( return_to_url => $self->req->url->to_string );
-    $self->redirect_to('/login');
-  }
-}
 
 sub list {
   my $self = shift;
 
-  $self->require_login();
-
-  my $db = Giftreg::DB->connect(sub { return $self->db(); });
-#  my @users = $db->resultset('Person')->search(undef, {
-#    order_by => 'email_address'
-#  });
+  my $db = Giftreg::DB->connect();
   my @users = $db->resultset('Gift')->search_related('wanted_by', undef, {
-    columns  => [ 'email_address' ],
     order_by => [ 'email_address' ],
     distinct => 1,
   });
   $self->stash(users => \@users);
 
   $self->render();
+}
+
+sub view {
+  my $self = shift;
+  my $uid = $self->param('uid');
+
+  my $db = Giftreg::DB->connect();
+  my @gifts = $db->resultset('Gift')->search(
+    { wanted_by_person_id => $uid },
+    { order_by  => [ 'bought_by_person_id DESC', 'priority_nbr ASC' ] },
+  );
+  my $user = $db->resultset('Person')->find($uid);
+  $self->stash(gifts => \@gifts);
+  $self->stash(user => $user);
 }
 
 1;
