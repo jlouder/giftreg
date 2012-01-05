@@ -33,18 +33,26 @@ sub startup {
   # Set up mail plugin
   $self->plugin(mail => $config->{mail});
 
+  # Seed the random number generator. Perl does this automatically at the
+  # first call to rand(), but when we're running under morbo, we keep
+  # getting killed and respawned, inheriting the parent process' seed each
+  # time.
+  srand(time ^ ($$ + ($$ << 15)));
+
   # Routes
   my $r = $self->routes;
 
-  $r->route('/welcome')->to('example#welcome');
   $r->route('/login')->to('auth#login');
-  $r->route('/logout')->to('auth#logout');
+  $r->route('/logout')->to('auth#do_logout');
   $r->route('/user/list')->to('user#list');
   $r->route('/user/view/:uid')->to('user#view');
 
   $r->route('/password/forgot')->to('password#forgot');
   $r->route('/password/mailresetlink')->to('password#mailresetlink');
   $r->route('/password/reset/:secret')->to('password#reset');
+  $r->route('/password/reset')->to('password#reset');
+
+  $r->route('/')->to('user#list');
 }
 
 1;

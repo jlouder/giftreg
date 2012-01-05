@@ -5,6 +5,13 @@
 <link rel="stylesheet" href="/include/styles.css" type="text/css" />
 </head>
 <body>
+<div id="header">
+% if( $self->user_exists ) {
+Welcome, <%= $self->user->email_address %>!
+% } else {
+<%= link_to 'Login' => '/login' %>
+% }
+</div>
 <%= content %>
 </body>
 </html>

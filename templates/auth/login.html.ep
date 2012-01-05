@@ -1,8 +1,8 @@
 % layout 'default';
 % title 'Login';
 <h2>Login</h2>
-% if( stash('error_message') ) {
-<div class="error_message"><%= stash('error_message') %></div>
+% if( stash('error_message') || flash('error_message') ) {
+<div class="error_message"><%= stash('error_message') || flash('error_message') %></div>
 % }
 <form method="post">
 <div>

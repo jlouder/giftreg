@@ -14,6 +14,25 @@ sub load_user {
   return $db->resultset('Person')->find($uid);
 }
 
+# SUBROUTINE:  hash($cleartext)
+# DECRIPTION:  Hashes a cleartext password.
+# RETURNS:     The hashed value, of the form "$1$<salt>$<hash>".
+sub hash {
+  my ($cleartext) = @_;
+
+  # Generate an 8-character random salt.
+  my @charset = ('a' .. 'z', '0' .. '9');
+  my $num_chars = scalar @charset;
+  my $salt = '';
+  foreach( 1 .. 8 ) {
+    $salt .= $charset[ int(rand($num_chars)) ];
+  }
+
+  # Generate hash from the salt
+  my $hash = sha1_hex($salt . $cleartext);
+  return "\$1\$$salt\$$hash";
+}
+
 # SUBROUTINE:  validate_user($app, $username, $password, $extradata)
 # DESCRIPTION: Checks a user's password. This is intended to be used by
 #              the Authentication plugin.
@@ -39,19 +58,8 @@ sub validate_user {
     return undef unless $computed_hash eq $correct_hash;
   } else {
     # Cleartext password; update it to be hashed.
-
-    # Generate an 8-character random salt.
-    my @charset = ('a' .. 'z', '0' .. '9');
-    my $num_chars = scalar @charset;
-    my $salt = '';
-    while( length $salt < 8 ) {
-      $salt .= $charset[ int(rand($num_chars)) ];
-    }
-
-    # Generate hash from the salt, then update it in the database.
-    my $cleartext_password = $user->password();
-    my $hash = sha1_hex($salt . $cleartext_password);
-    $user->password("\$1\$$salt\$$hash");
+    my $cleartext_password = $user->password;
+    $user->password(hash($cleartext_password));
     $user->update();
 
     return undef unless $password = $cleartext_password;
@@ -115,11 +123,13 @@ sub login {
   }
 }
 
-sub logout {
+# Named so as not to conflict with the 'logout' helper.
+sub do_logout {
   my $self = shift;
 
-  $self->app->logout();
-  $self->redirect_to('/login', error_message => 'You have been logged out.');
+  $self->logout();
+  $self->flash(error_message => 'You have been logged out.');
+  $self->redirect_to('/login');
 }
 
 1;

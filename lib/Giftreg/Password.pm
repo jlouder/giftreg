@@ -1,10 +1,8 @@
 package Giftreg::Password;
 use Mojo::Base 'Mojolicious::Controller';
 use Giftreg::DB;
-
-sub forgot {
-  # Just show the form!
-}
+use Giftreg::Auth;
+use Data::Dumper;
 
 sub mailresetlink {
   my $self = shift;
@@ -37,32 +35,60 @@ sub mailresetlink {
   my $pw = $db->resultset('PasswordReset')->create({
     person_id => $user->person_id,
     secret    => $secret,
-    expire_dt => \'sysdate + 4',
+    expire_dt => time + 60*60*24*4, # 4 days from now
   });
 
-  # Mail the reset link!
-  $self->stash(secret => $secret);
-  $self->mail(to       => $user->email_address,
-              template => 'password/reset',
-              format   => 'mail');
+  # Mail the reset link
+  if( defined $self->config->{mail}->{how} ) {
+    $self->stash(secret => $secret);
+    $self->mail(to       => $user->email_address,
+                template => 'password/reset',
+                format   => 'mail');
+  }
 }
 
 sub reset {
   my $self = shift;
 
+  my $time_now = time;
+
   # Make sure the secret code is valid.
-  my $secret = $self->param('secret');
+  my $secret = $self->param('secret') || '';
+  if( $secret eq '' ) {
+    $self->render('password/invalid_code');
+    return;
+  }
+
   my $db = Giftreg::DB->connect();
   my $pwreset = $db->resultset('PasswordReset')->single({
     secret    => $secret,
-    expire_dt => \'> sysdate',
+    expire_dt => \"> $time_now",
   });
 
   if( !defined $pwreset ) {
     $self->render('password/invalid_code');
+    return;
   }
 
   $self->stash(email_address => $pwreset->person->email_address);
+  $self->stash(secret => $secret);
+
+  # If the password fields are filled out, they must match.
+  my $pw1 = $self->param('password');
+  my $pw2 = $self->param('confirm_password');
+  if( defined $pw1 && defined $pw2 ) {
+    if( $pw1 ne $pw2 ) {
+      $self->stash(error_message => 'The passwords entered do not match.');
+      return;
+    }
+
+    # Update the password
+    $pwreset->person->password(Giftreg::Auth::hash($pw1));
+    $pwreset->person->update;
+
+    $self->render('password/updated');
+    return;
+  }
 }
 
 1;

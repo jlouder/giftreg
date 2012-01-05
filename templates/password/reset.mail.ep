@@ -1,4 +1,4 @@
-% stash subject => 'Password reset';
+% stash subject => 'Password reset instructions';
 % stash type => 'text/html';
 <p>Someone requested the ability to reset your gift registry password. If
 you made this request, click the link below to select a new password:</p>
