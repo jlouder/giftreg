@@ -9,6 +9,8 @@ use Giftreg::DB;
 sub startup {
   my $self = shift;
 
+  $self->secret('iWCithIiPkv660gNbzzK0HZgf');
+
   # Read configuration file
   my $config = $self->plugin('Config');
 
