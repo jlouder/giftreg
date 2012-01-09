@@ -128,8 +128,8 @@ sub do_logout {
   my $self = shift;
 
   $self->logout();
-  $self->flash(error_message => 'You have been logged out.');
-  $self->redirect_to('/login');
+  $self->flash(message => 'You have been logged out.');
+  $self->redirect_to('/');
 }
 
 1;

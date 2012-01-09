@@ -6,12 +6,22 @@
 </head>
 <body>
 <div id="header">
+<%= link_to 'Loudermilk.org Gift Registry' => '/' %>
+<span id="login_control">
 % if( $self->user_exists ) {
-Welcome, <%= $self->user->email_address %>!
+<a href="<%= url_for '/logout' %>">Logout <%= $self->user->email_address %></a>
 % } else {
 <%= link_to 'Login' => '/login' %>
 % }
+</span>
 </div>
+% if( flash('message') ) {
+<div class="message">
+<%= flash('message') %>
+</div>
+% }
+<div id="content">
 <%= content %>
+</div>
 </body>
 </html>

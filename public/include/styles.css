@@ -1,3 +1,46 @@
+/* much taken from css3please.com! */
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Helvetica, Arial, Freesans, Clean, sans-serif;
+  font-size: 13pt;
+}
+
+#header {
+  padding: 10px;
+  border-bottom: 1px solid #cacaca;
+  margin-bottom: 10px;
+  background: -moz-linear-gradient(#FAFAFA, #EAEAEA) repeat scroll 0 0 transparent;
+}
+
+#content {
+  padding: 5px;
+  width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
 .error_message {
   color: red;
+}
+
+.message {
+  background-color: #e6ffee;
+  border: 1px solid #cacaca;
+
+  -webkit-border-radius: 10px; 
+     -moz-border-radius: 10px; 
+          border-radius: 10px; 
+  -moz-background-clip: padding; -webkit-background-clip: padding-box; background-clip: padding-box;
+
+  width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 3px;
+  text-align: center;
+}
+
+#login_control {
+  float: right;
 }
