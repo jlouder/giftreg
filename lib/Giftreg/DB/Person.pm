@@ -20,6 +20,7 @@ __PACKAGE__->add_columns(
   'last_update_dt' => {
     data_type   => 'number',
     is_nullable => 1,
+    accessor    => '_last_update_dt',
   },
 );
 
@@ -33,7 +34,7 @@ __PACKAGE__->has_many('gifts', => 'Giftreg::DB::Gift',
 sub last_update_dt {
   my $self = shift;
 
-  return strftime('%B %d, %Y', gmtime($self->get_column('last_update_dt')))
+  return strftime('%B %d, %Y', gmtime($self->_last_update_dt))
 }
 
 1;

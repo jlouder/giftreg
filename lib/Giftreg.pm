@@ -46,8 +46,15 @@ sub startup {
 
   $r->route('/login')->to('auth#login');
   $r->route('/logout')->to('auth#do_logout');
+
   $r->route('/user/list')->to('user#list');
   $r->route('/user/view/:uid')->to('user#view');
+
+  $r->route('/gift/buy/:gift_id')->to('gift#buy');
+  $r->route('/gift/unbuy/:gift_id')->to('gift#unbuy');
+  $r->route('/gift/edit/:gift_id')->to('gift#edit');
+  $r->route('/gift/save/:gift_id')->to('gift#save');
+  $r->route('/gift/delete/:gift_id')->to('gift#delete');
 
   $r->route('/password/forgot')->to('password#forgot');
   $r->route('/password/mailresetlink')->to('password#mailresetlink');
