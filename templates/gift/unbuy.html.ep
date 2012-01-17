@@ -1,0 +1,4 @@
+% layout 'default';
+% title 'Unbuy a gift';
+<h2>Unbuy a gift</h2>
+<p>Only logged-in users should see this page!</p>
