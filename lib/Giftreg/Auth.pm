@@ -77,10 +77,11 @@ sub require_login {
   my $self = shift;
 
   if( $self->user_exists() ) {
-    return;
+    return 1;
   } else {
-    $self->stash( return_to_url => $self->req->url->to_string );
+    $self->flash( return_to_url => $self->req->url->to_string );
     $self->redirect_to('/login');
+    return 0;
   }
 }
 
@@ -102,6 +103,7 @@ sub login {
 
   my $username = $self->param('username');
   my $password = $self->param('password');
+  my $return_to_url = $self->param('return_to_url') || '/';
 
   # No username/password? Print the login form.
   if( !defined $username || !defined $password ) {
@@ -110,9 +112,7 @@ sub login {
 
   # Check the password that was entered.
   if( $self->authenticate($username, $password) ) {
-    # FIXME: This should redirect to the page the user was trying to load
-    # originally when authentication was required.
-    $self->redirect_to('/user/list');
+    $self->redirect_to($return_to_url);
     return;
   } else {
     # Redisplay the login form with an error message.

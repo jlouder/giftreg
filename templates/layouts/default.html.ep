@@ -15,6 +15,9 @@
 % }
 </span>
 </div>
+% if( my $error_message = flash('error_message') || stash('error_message') ) {
+<div class="error_message"><%= $error_message %></div>
+% }
 % if( flash('message') ) {
 <div class="message">
 <%= flash('message') %>

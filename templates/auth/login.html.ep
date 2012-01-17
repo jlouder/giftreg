@@ -1,9 +1,6 @@
 % layout 'default';
 % title 'Login';
 <h2>Login</h2>
-% if( stash('error_message') || flash('error_message') ) {
-<div class="error_message"><%= stash('error_message') || flash('error_message') %></div>
-% }
 <form method="post">
 <div>
   Email address:
@@ -14,5 +11,9 @@
   <input type="password" name="password" />
 </div>
 <div><%= link_to 'Forgot your password?' => '/password/forgot' %></div>
+% if( flash('return_to_url') ) {
+<input type="hidden" name="return_to_url"
+       value="<%= flash('return_to_url') %>" />
+% }
 <input type="submit" />
 </form>

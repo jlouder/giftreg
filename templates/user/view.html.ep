@@ -1,26 +1,5 @@
 % layout 'default';
 % title "Gifts for " . $user->email_address;
-<%
-# Prints the un-buy button and link, or nothing, depending on who is logged in.
-sub unbuy_button {
-  my ($self, $gift) = @_;
-
-  # Anonymous users never see the button.
-  return '' unless $self->user_exists;
-
-  # Don't show the button if the gift is not bought.
-  return '' unless $gift->is_bought;
-
-  # Show the button for gifts bought by the currently logged-in user,
-  # or for everything if this user owns the list.
-  if( $self->user->person_id == $gift->wanted_by_person_id ||
-      $self->user->person_id == $gift->bought_by_person_id ) {
-    return link_to 'Un-buy' => "/gift/unbuy/" . $gift->gift_id;
-  }
-
-  return '';
-}
-%>
 <p>Here's the list of gifts for <%= $user->email_address %>,
 last updated on <%= $user->last_update_dt %>.</p>
 <table>
@@ -37,8 +16,12 @@ last updated on <%= $user->last_update_dt %>.</p>
     <td><%== $gift->long_desc %></td>
     <td><%== $gift->location %></td>
     <td><%= $gift->priority_desc %></td>
-    <td><%= $gift->is_bought ? 'already bought' : 'available' %>
-        <%= unbuy_button($self, $gift) %></td>
+    <td><%== $self->bought_message($gift) %>
+        <%== $self->buy_button($gift) %>
+        <%== $self->unbuy_button($gift) %>
+        <%== $self->edit_button($gift) %>
+        <%== $self->delete_button($gift) %>
+    </td>
   </tr>
 % }
 </table>

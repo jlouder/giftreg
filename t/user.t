@@ -40,4 +40,4 @@ $t->post_form_ok('/login', {
   password => 'person1',
 });
 $t->get_ok('/user/view/1')->status_is(200)
-  ->content_like(qr/Un-buy/i, 'un-buy link for owner');
+  ->content_like(qr/Unbuy/i, 'unbuy link for owner');

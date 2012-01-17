@@ -3,6 +3,7 @@ use Mojo::Base 'Mojolicious';
 use Mojolicious::Plugin::Database;
 use Mojolicious::Plugin::Mail;
 use Giftreg::Auth;
+use Giftreg::Gift;
 use Giftreg::DB;
 
 # This method will run once at server start
@@ -31,9 +32,13 @@ sub startup {
     load_user     => \&Giftreg::Auth::load_user,
     validate_user => \&Giftreg::Auth::validate_user,
   });
+  $self->helper('require_login' => \&Giftreg::Auth::require_login);
 
   # Set up mail plugin
   $self->plugin(mail => $config->{mail});
+
+  # Add presentation helpers
+  Giftreg::Gift::add_helpers($self);
 
   # Seed the random number generator. Perl does this automatically at the
   # first call to rand(), but when we're running under morbo, we keep

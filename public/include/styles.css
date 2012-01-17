@@ -11,7 +11,14 @@ body {
   padding: 10px;
   border-bottom: 1px solid #cacaca;
   margin-bottom: 10px;
-  background: -moz-linear-gradient(#FAFAFA, #EAEAEA) repeat scroll 0 0 transparent;
+
+  background-color: #fafafa;
+  background: -webkit-gradient(linear, left top, left bottom, from(#fafafa), to(#eaeaea));
+  background: -webkit-linear-gradient(top, #fafafa, #eaeaea);
+  background:    -moz-linear-gradient(top, #fafafa, #eaeaea);
+  background:     -ms-linear-gradient(top, #fafafa, #eaeaea);
+  background:      -o-linear-gradient(top, #fafafa, #eaeaea);
+  background:         linear-gradient(top, #fafafa, #eaeaea);
 }
 
 #content {
@@ -21,8 +28,30 @@ body {
   margin-right: auto;
 }
 
+table {
+  border-collapse: collapse;
+}
+
+table, th, td {
+  border: 1px solid #909090;
+  padding: 4px;
+}
+
 .error_message {
-  color: red;
+  /*color: red;*/
+  background-color: #ffaaaa;
+  border: 1px solid #cacaca;
+
+  -webkit-border-radius: 10px; 
+     -moz-border-radius: 10px; 
+          border-radius: 10px; 
+  -moz-background-clip: padding; -webkit-background-clip: padding-box; background-clip: padding-box;
+
+  width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 3px;
+  text-align: center;
 }
 
 .message {
@@ -43,4 +72,45 @@ body {
 
 #login_control {
   float: right;
+}
+
+/* from css-tricks.com/examples/ButtonMaker */
+.button {
+  border-top: 1px solid #96d1f8;
+  background: #65a9d7;
+  background: -webkit-gradient(linear, left top, left bottom, from(#3e779d), to(#65a9d7));
+  background: -webkit-linear-gradient(top, #3e779d, #65a9d7);
+  background: -moz-linear-gradient(top, #3e779d, #65a9d7);
+  background: -ms-linear-gradient(top, #3e779d, #65a9d7);
+  background: -o-linear-gradient(top, #3e779d, #65a9d7);
+  padding: 2px 4px;
+  -webkit-border-radius: 9px;
+  -moz-border-radius: 9px;
+  border-radius: 9px;
+  -webkit-box-shadow: rgba(0,0,0,1) 0 1px 0;
+  -moz-box-shadow: rgba(0,0,0,1) 0 1px 0;
+  box-shadow: rgba(0,0,0,1) 0 1px 0;
+  text-shadow: rgba(0,0,0,.4) 0 1px 0;
+  color: white;
+  /*font-size: 15px;
+  font-family: Georgia, serif;*/
+  font-size: 10pt;
+  text-decoration: none;
+  vertical-align: middle;
+
+  text-align: center;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  display: block;
+}
+
+.button:hover {
+   border-top-color: #28597a;
+   background: #28597a;
+   color: #ccc;
+}
+
+.button:active {
+   border-top-color: #1b435e;
+   background: #1b435e;
 }
