@@ -151,4 +151,32 @@ sub buy {
   $self->redirect_to($prev_url);
 }
 
+sub edit {
+  my $self = shift;
+
+  $self->require_login() or return;
+
+  my $next_url = $self->req->headers->referrer || '/';
+
+  my $gift_id = $self->param('gift_id');
+  my $db = Giftreg::DB->connect();
+  my $gift = $db->resultset('Gift')->find($gift_id);
+
+  if( !defined $gift ) {
+    $self->flash('error_message' => 'The gift you selected is unknown.');
+    $self->redirect_to($next_url);
+    return;
+  }
+
+  $next_url = '/user/view/' . $gift->wanted_by_person_id;
+
+  if( $gift->wanted_by_person_id != $self->user->person_id ) {
+    $self->flash('error_message' => 'You can only edit gifts on your list.');
+    $self->redirect_to($next_url);
+    return;
+  }
+
+  $self->stash('gift' => $gift);
+}
+
 1;

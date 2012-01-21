@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 use Mojo::Base -strict;
 
-use Test::More tests => 27;
+use Test::More tests => 37;
 use Test::Mojo;
 use DBI;
 
@@ -60,3 +60,16 @@ $t->get_ok('/gift/unbuy/1')->status_is(200)
                  'unbuy eligible gift');
 $gift = $db->resultset('Gift')->find(1);
 ok(!$gift->is_bought, 'gift 1 is not bought in db');
+
+# Edit a gift
+$t->get_ok('/gift/edit/3')->status_is(200)
+  ->content_like(qr/The gift you selected is unknown/i, 'edit invalid gift');
+$t->get_ok('/gift/edit/2')->status_is(200)
+  ->content_like(qr/You can only edit gifts on your list/i,
+                 q{edit someone else's gift});
+$t->post_form_ok('/login', {
+  username => 'person1@example.com',
+  password => 'person1',
+});
+$t->get_ok('/gift/edit/1')->status_is(200)
+  ->element_exists('div#content form', 'edit form present');

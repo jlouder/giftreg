@@ -33,40 +33,48 @@ table {
 }
 
 table, th, td {
-  border: 1px solid #909090;
   padding: 4px;
 }
 
+table#giftlist, table#giftlist th, table#giftlist td {
+  border: 1px solid #909090;
+}
+
 .error_message {
-  /*color: red;*/
-  background-color: #ffaaaa;
-  border: 1px solid #cacaca;
+  background-color: #feefb3;
+  color: #d8000c;
+  border: 1px solid #d8000c;
+  background-repeat: no-repeat;
+  background-position: 10px center;
 
   -webkit-border-radius: 10px; 
      -moz-border-radius: 10px; 
           border-radius: 10px; 
   -moz-background-clip: padding; -webkit-background-clip: padding-box; background-clip: padding-box;
 
-  width: 800px;
+  width: 600px;
   margin-left: auto;
   margin-right: auto;
-  padding: 3px;
+  padding: 15px 10px 15px 50px;
   text-align: center;
 }
 
 .message {
-  background-color: #e6ffee;
-  border: 1px solid #cacaca;
+  background-color: #dff2bf;
+  color: #4f8a10;
+  border: 1px solid #4f8a10;
+  background-repeat: no-repeat;
+  background-position: 10px center;
 
   -webkit-border-radius: 10px; 
      -moz-border-radius: 10px; 
           border-radius: 10px; 
   -moz-background-clip: padding; -webkit-background-clip: padding-box; background-clip: padding-box;
 
-  width: 800px;
+  width: 600px;
   margin-left: auto;
   margin-right: auto;
-  padding: 3px;
+  padding: 15px 10px 15px 50px;
   text-align: center;
 }
 

@@ -2,7 +2,7 @@
 % title "Gifts for " . $user->email_address;
 <p>Here's the list of gifts for <%= $user->email_address %>,
 last updated on <%= $user->last_update_dt %>.</p>
-<table>
+<table id="giftlist">
   <tr>
     <th>Gift</th>
     <th>Description</th>

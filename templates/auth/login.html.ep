@@ -2,18 +2,23 @@
 % title 'Login';
 <h2>Login</h2>
 <form method="post">
-<div>
-  Email address:
-  <input type="text" name="username" />
-</div>
-<div>
-  Password:
-  <input type="password" name="password" />
-</div>
-<div><%= link_to 'Forgot your password?' => '/password/forgot' %></div>
 % if( flash('return_to_url') ) {
 <input type="hidden" name="return_to_url"
        value="<%= flash('return_to_url') %>" />
 % }
-<input type="submit" />
+<table id="login">
+<tr>
+  <td>Email address:</td>
+  <td><input type="text" name="username" size="40" /></td>
+</tr>
+<tr>
+  <td>Password:</td>
+  <td><input type="password" name="password" size="40 "/></td>
+</tr>
+<tr>
+  <td colspan="2"><%= link_to 'Forgot your password?' => '/password/forgot' %></td>
+</tr>
+<tr>
+  <td colspan="2"><input type="submit" value="Login" class="button" /></td>
+</tr>
 </form>
