@@ -36,7 +36,7 @@ $t->post_form_ok('/login', {
   username => 'person1@example.com',
   password => 'person1',
 })->status_is(200)  # follows redirect
-  ->content_like(qr/Logout person1\@example\.com/, 'username in header');
+  ->content_like(qr/Welcome, person1\@example\.com/, 'username in header');
 
 # Now, log out
 $t->get_ok('/logout')->status_is(200)
