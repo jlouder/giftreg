@@ -11,7 +11,7 @@ last updated on <%= $user->last_update_dt %>.</p>
     <th>Buy</th>
   </tr>
 % foreach my $gift (@$gifts) {
-  <tr>
+  <tr<%== ' class="bought"' if $gift->is_bought %>>
     <td><%== $gift->short_desc %></td>
     <td><%== $gift->long_desc %></td>
     <td><%== $gift->location %></td>

@@ -6,14 +6,20 @@
 </head>
 <body>
 <div id="header">
-<%= link_to 'Loudermilk.org Gift Registry' => '/' %>
-<span id="login_control">
+<div id="left">
+<%= link_to 'Browse Gift Lists' => '/' %>
+</div>
+<div id="right">
 % if( $self->user_exists ) {
-<a href="<%= url_for '/logout' %>">Logout <%= $self->user->email_address %></a>
+Welcome, <%= $self->user->email_address %>!
+<a href="<%= url_for '/logout' %>">Logout</a>
 % } else {
 <%= link_to 'Login' => '/login' %>
 % }
-</span>
+</div>
+<div id="middle">
+<%= link_to 'Edit Your List' => '/user/edit' %>
+</div>
 </div>
 % if( my $error_message = flash('error_message') || stash('error_message') ) {
 <div style="background-image: url('<%= url_for '/images/icon_error.png' %>');"

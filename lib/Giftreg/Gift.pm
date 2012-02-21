@@ -179,4 +179,71 @@ sub edit {
   $self->stash('gift' => $gift);
 }
 
+sub save {
+  my $self = shift;
+
+  $self->require_login() or return;
+
+  my $next_url = $self->req->headers->referrer || '/';
+
+  my $gift_id = $self->param('gift_id');
+  my $db = Giftreg::DB->connect();
+  my $gift;
+
+  if( $gift_id ne 'new' ) {
+    $gift = $db->resultset('Gift')->find($gift_id);
+  
+    if( !defined $gift ) {
+      $self->flash('error_message' => 'The gift you selected is unknown.');
+      $self->redirect_to($next_url);
+      return;
+    }
+  
+    if( $gift->wanted_by_person_id != $self->user->person_id ) {
+      $self->flash('error_message' => 'You can only edit gifts on your list.');
+      $self->redirect_to($next_url);
+      return;
+    }
+  
+    if( defined $gift->bought_by_person_id ) {
+      $self->flash('error_message' => 'You can only edit gifts ' .
+                                      'that have not been bought.');
+      $self->redirect_to($next_url);
+      return;
+    }
+  }
+
+  # Check for required fields
+  foreach my $field ( qw( short_desc long_desc location priority_nbr ) ) {
+    if( !defined $self->param($field) ) {
+      $self->flash('error_message' => 'One or more required fields missing');
+      $self->redirect_to("/gift/edit/$gift_id");
+      return;
+    }
+  }
+
+  # Save the updates
+  if( $gift_id eq 'new' ) {
+    $gift = $db->resultset('Gift')->create({
+      short_desc          => $self->param('short_desc'),
+      long_desc           => $self->param('long_desc'),
+      location            => $self->param('location'),
+      priority_nbr        => $self->param('priority_nbr'),
+      wanted_by_person_id => $self->user->person_id,
+    });
+  } else {
+    foreach my $field ( qw( short_desc long_desc location priority_nbr ) ) {
+      $gift->$field($self->param($field));
+    }
+    $gift->update;
+  }
+
+  # Update the user's last_update_dt time.
+  $self->user->last_update_dt(time);
+  $self->user->update;
+
+  $self->flash('message' => 'The gift you edited has been saved.');
+  $self->redirect_to('/user/view/' . $self->user->person_id);
+}
+
 1;

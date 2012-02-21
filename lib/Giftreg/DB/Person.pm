@@ -34,6 +34,10 @@ __PACKAGE__->has_many('gifts', => 'Giftreg::DB::Gift',
 sub last_update_dt {
   my $self = shift;
 
+  # If there is an update to the column, we'll let the original accessor
+  # deal with it.
+  return $self->_last_update_dt(@_) if @_;
+
   return strftime('%B %d, %Y', gmtime($self->_last_update_dt))
 }
 

@@ -31,4 +31,13 @@ sub view {
   $self->stash(user => $user);
 }
 
+# edit is the same as view for the current user, but forces a login
+sub edit {
+  my $self = shift;
+
+  $self->require_login() or return;;
+
+  $self->redirect_to('/user/view/' . $self->user->person_id);
+}
+
 1;

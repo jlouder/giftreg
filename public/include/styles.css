@@ -40,6 +40,10 @@ table#giftlist, table#giftlist th, table#giftlist td {
   border: 1px solid #909090;
 }
 
+tr.bought td {
+  background-color: #c0c0c0;
+}
+
 .error_message {
   background-color: #feefb3;
   color: #d8000c;
@@ -78,8 +82,20 @@ table#giftlist, table#giftlist th, table#giftlist td {
   text-align: center;
 }
 
-#login_control {
+#header #left {
+  width: 350px;
+  float: left;
+  text-align: left;
+}
+
+#header #right {
+  width: 350px;
   float: right;
+  text-align: right;
+}
+
+#header #middle {
+  text-align: center;
 }
 
 /* from css-tricks.com/examples/ButtonMaker */

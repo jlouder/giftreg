@@ -54,6 +54,7 @@ sub startup {
 
   $r->route('/user/list')->to('user#list');
   $r->route('/user/view/:uid')->to('user#view');
+  $r->route('/user/edit')->to('user#edit');
 
   $r->route('/gift/buy/:gift_id')->to('gift#buy');
   $r->route('/gift/unbuy/:gift_id')->to('gift#unbuy');
