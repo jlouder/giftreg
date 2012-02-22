@@ -8,6 +8,7 @@ __PACKAGE__->add_columns(
   'gift_id' => {
     data_type      => 'number',
     sequence       => 'gift_id_seq',
+    auto_nextval   => 1,
   },
   'short_desc' => {
     data_type      => 'varchar',

@@ -29,7 +29,11 @@ sub add_helpers {
   $self->app->helper(edit_button => sub {
     my ($self, $gift) = @_;
   
+    # Anonymous users never see the button.
     return '' unless $self->user_exists;
+
+    # Don't show the button if the gift is bought (users should unbuy first).
+    return '' if $gift->is_bought;
   
     if( $self->user->person_id == $gift->wanted_by_person_id ) {
       my $link_url = $self->url_for('/gift/edit/' . $gift->gift_id);
@@ -244,6 +248,20 @@ sub save {
 
   $self->flash('message' => 'The gift you edited has been saved.');
   $self->redirect_to('/user/view/' . $self->user->person_id);
+}
+
+sub add {
+  my $self = shift;
+
+  $self->require_login() or return;
+
+  # Create an "empty" gift object for the edit template.
+  my $gift = Giftreg::DB::Gift->new;
+  $gift->gift_id('new');
+
+  $self->stash('gift' => $gift);
+
+  $self->render('gift/edit');
 }
 
 1;

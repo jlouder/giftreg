@@ -61,6 +61,7 @@ sub startup {
   $r->route('/gift/edit/:gift_id')->to('gift#edit');
   $r->route('/gift/save/:gift_id')->to('gift#save');
   $r->route('/gift/delete/:gift_id')->to('gift#delete');
+  $r->route('/gift/add')->to('gift#add');
 
   $r->route('/password/forgot')->to('password#forgot');
   $r->route('/password/mailresetlink')->to('password#mailresetlink');
