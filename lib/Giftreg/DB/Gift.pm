@@ -2,13 +2,13 @@ package Giftreg::DB::Gift;
 use base qw/DBIx::Class::Core/;
 use feature qw/switch/;
 
+__PACKAGE__->load_components( qw/PK::Sequence Core/ );
 __PACKAGE__->table('gift');
 
 __PACKAGE__->add_columns(
   'gift_id' => {
     data_type      => 'number',
     sequence       => 'gift_id_seq',
-    auto_nextval   => 1,
   },
   'short_desc' => {
     data_type      => 'varchar',
