@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 use Mojo::Base -strict;
 
-use Test::More tests => 78;
+use Test::More tests => 88;
 use Test::Mojo;
 use DBI;
 
@@ -172,3 +172,23 @@ $user = $db->resultset('Person')->find(1);
 ok(defined $user, 'found user in db');
 ok($user->_last_update_dt > $last_update_dt,
    'user last_update_dt updated');
+
+# Delete the gift just added
+my $gift_id_to_delete = $gift->gift_id;
+$t->get_ok("/gift/delete/$gift_id_to_delete")->status_is(200)
+  ->content_like(qr/The gift you selected has been deleted/i,
+                 'delete newly-added gift');
+
+# Make sure the gift no longer exists in the database.
+@gifts = $db->resultset('Gift')->search({short_desc => 'A new gift'});
+ok(!@gifts, 'gift removed from db');
+
+# Try to delete a gift that belongs to someone else.
+$t->get_ok('/gift/delete/4')->status_is(200)
+  ->content_like(qr/You can only delete gifts on your list/i,
+                 q{delete someone else's gift});
+
+# Try to delete an invalid gift.
+$t->get_ok('/gift/delete/5')->status_is(200)
+  ->content_like(qr/The gift you selected is unknown/i,
+                 'delete invalid gift');

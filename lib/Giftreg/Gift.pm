@@ -183,6 +183,34 @@ sub edit {
   $self->stash('gift' => $gift);
 }
 
+sub delete {
+  my $self = shift;
+
+  $self->require_login() or return;
+
+  my $next_url = $self->req->headers->referrer || '/';
+
+  my $gift_id = $self->param('gift_id');
+  my $db = Giftreg::DB->connect();
+  my $gift = $db->resultset('Gift')->find($gift_id);
+
+  if( !defined $gift ) {
+    $self->flash('error_message' => 'The gift you selected is unknown.');
+    $self->redirect_to($next_url);
+    return;
+  }
+
+  if( $gift->wanted_by_person_id != $self->user->person_id ) {
+    $self->flash('error_message' => 'You can only delete gifts on your list.');
+    $self->redirect_to('/user/view/' . $gift->wanted_by_person_id);
+    return;
+  }
+
+  $gift->delete;
+  $self->flash('message' => 'The gift you selected has been deleted.');
+  $self->redirect_to('/user/view/' . $self->user->person_id);
+}
+
 sub save {
   my $self = shift;
 
