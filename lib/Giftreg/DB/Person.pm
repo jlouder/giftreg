@@ -38,6 +38,7 @@ sub last_update_dt {
   # deal with it.
   return $self->_last_update_dt(@_) if @_;
 
+  return '(never updated)' if !defined $self->_last_update_dt;
   return strftime('%B %d, %Y', gmtime($self->_last_update_dt))
 }
 
