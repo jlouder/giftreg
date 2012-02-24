@@ -15,12 +15,13 @@ my $t = Test::Mojo->new('Giftreg');
 
 # populate the database
 my $db = Giftreg::DB->connect();
-$db->deploy();
+$db->resultset('Person')->delete_all;
 $db->populate('Person', [
   [ qw/ person_id email_address password last_update_dt / ],
   [ 1, 'person1@example.com', 'person1', undef ],
   [ 2, 'person2@example.com', 'person2', undef ],
 ]);
+$db->resultset('Gift')->delete_all;
 $db->populate('Gift', [
   [ qw/ gift_id short_desc long_desc location
         wanted_by_person_id bought_by_person_id priority_nbr / ],
