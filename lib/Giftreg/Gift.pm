@@ -51,7 +51,8 @@ sub add_helpers {
   
     if( $self->user->person_id == $gift->wanted_by_person_id ) {
       my $link_url = $self->url_for('/gift/delete/' . $gift->gift_id);
-      return qq{<a href="$link_url" class="button">Delete</a>};
+      return qq!<a href="$link_url" class="button" ! .
+             qq!onclick="if(confirm('Are you sure you want to delete this gift?')){return true;}else{return false;}">Delete</a>!;
     }
   
     return '';
