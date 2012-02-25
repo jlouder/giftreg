@@ -12,9 +12,9 @@ last updated on <%= $user->last_update_dt %>.</p>
   </tr>
 % foreach my $gift (@$gifts) {
   <tr<%== ' class="bought"' if $gift->is_bought %>>
-    <td><%== $gift->short_desc %></td>
-    <td><%== $gift->long_desc %></td>
-    <td><%== $gift->location %></td>
+    <td><%== $gift->short_desc || '' %></td>
+    <td><%== $gift->long_desc || '' %></td>
+    <td><%== $gift->location || '' %></td>
     <td><%= $gift->priority_desc %></td>
     <td><%== $self->bought_message($gift) %>
         <%== $self->buy_button($gift) %>
