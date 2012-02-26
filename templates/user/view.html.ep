@@ -2,6 +2,9 @@
 % title "Gifts for " . $user->email_address;
 <p>Here's the list of gifts for <%= $user->email_address %>,
 last updated on <%= $user->last_update_dt %>.</p>
+% if( $self->user_exists && ($self->user->person_id == $user->person_id) ) {
+<p><%= link_to "Add a gift to your list." => '/gift/add' %></p>
+% }
 <table id="giftlist">
   <tr>
     <th>Gift</th>
@@ -25,3 +28,6 @@ last updated on <%= $user->last_update_dt %>.</p>
   </tr>
 % }
 </table>
+% if( $self->user_exists && ($self->user->person_id == $user->person_id) ) {
+<p><%= link_to "Add a gift to your list." => '/gift/add' %></p>
+% }

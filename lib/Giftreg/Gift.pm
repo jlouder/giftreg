@@ -287,6 +287,7 @@ sub add {
   # Create an "empty" gift object for the edit template.
   my $gift = Giftreg::DB::Gift->new;
   $gift->gift_id('new');
+  $gift->priority_nbr(1);
 
   $self->stash('gift' => $gift);
 
