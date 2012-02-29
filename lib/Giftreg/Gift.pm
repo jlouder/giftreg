@@ -121,6 +121,11 @@ sub unbuy {
   $gift->bought_by_person_id(undef);
   $gift->update;
   $self->flash('message' => 'The gift you selected has been unbought.');
+
+  # Update the user's last_update_dt time.
+  $self->user->last_update_dt(time);
+  $self->user->update;
+
   $self->redirect_to($prev_url);
 }
 
@@ -209,6 +214,11 @@ sub delete {
 
   $gift->delete;
   $self->flash('message' => 'The gift you selected has been deleted.');
+
+  # Update the user's last_update_dt time.
+  $self->user->last_update_dt(time);
+  $self->user->update;
+
   $self->redirect_to('/user/view/' . $self->user->person_id);
 }
 
