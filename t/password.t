@@ -28,6 +28,7 @@ $db->populate('Gift', [
   [ 1, 'Gift 1', 'Longer description of gift 1', 'Anywhere', 1, undef, 3 ],
   [ 2, 'Gift 2', 'Longer description of gift 2', 'Anywhere', 1, undef, 1 ],
 ]);
+$db->resultset('PasswordReset')->delete_all;
 
 # Get the password reset form
 $t->get_ok('/password/forgot')->status_is(200);
