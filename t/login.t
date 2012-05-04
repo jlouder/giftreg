@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 use Mojo::Base -strict;
 
-use Test::More tests => 14;
+use Test::More tests => 29;
 use Test::Mojo;
 use DBI;
 
@@ -49,3 +49,43 @@ $t->post_form_ok('/login', {
   username => 'person1@example.com',
   password => 'badpassword',
 })->status_is(200)->content_like(qr/Login failed/, 'failed login error');
+
+# Create a new user ...
+# ... with an email address that is already in use
+$t->post_form_ok('/login', {
+  newuser_username         => 'person1@example.com',
+  newuser_password         => 'newpassword',
+  newuser_password_confirm => 'newpassword',
+})->status_is(200)->content_like(qr/already in use/i,
+                                 'register duplicate user');
+
+# ... without a password
+$t->post_form_ok('/login', {
+  newuser_username         => 'person3@example.com',
+})->status_is(200)->content_like(qr/enter a password/i,
+                                 'register user without password');
+
+# ... with passwords that don't match
+$t->post_form_ok('/login', {
+  newuser_username         => 'person3@example.com',
+  newuser_password         => 'newpassword',
+  newuser_password_confirm => 'differentpassword',
+})->status_is(200)->content_like(qr/do not match/i,
+                                 'new user passwords do not match');
+
+# ... correctly
+$t->post_form_ok('/login', {
+  newuser_username         => 'person3@example.com',
+  newuser_password         => 'newpassword',
+  newuser_password_confirm => 'newpassword',
+})->status_is(200)->content_like(qr/account has been created/i,
+                                 'register new user')
+  ->content_like(qr/Welcome, person3\@example\.com/, 'new user is logged in');
+
+# Confirm the new user's database password is hashed.
+my @users = $db->resultset('Person')->search({
+  email_address => 'person3@example.com',
+});
+my $user = $users[0];
+ok(defined $user, 'found new user in database');
+like($user->password, qr/\$1\$\S+\$\S+/, 'db password is hashed');
