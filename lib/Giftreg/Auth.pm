@@ -101,26 +101,71 @@ sub check {
 sub login {
   my $self = shift;
 
-  my $username = $self->param('username');
-  my $password = $self->param('password');
+  my $username = $self->param('username') || '';
+  my $password = $self->param('password') || '';
+  my $newuser_username = $self->param('newuser_username') || '';
+  my $newuser_password = $self->param('newuser_password') || '';
+  my $newuser_password_confirm = $self->param('newuser_password_confirm') || '';
   my $return_to_url = $self->param('return_to_url') || '/';
 
-  # No username/password? Print the login form.
-  if( !defined $username || !defined $password ) {
+  # No username in the existing user or new user fields? Print the login form.
+  if( $username eq '' && $newuser_username eq '' ) {
     return;
   }
 
-  # Check the password that was entered.
-  if( $self->authenticate($username, $password) ) {
-    $self->redirect_to($return_to_url);
-    return;
-  } else {
-    # Redisplay the login form with an error message.
+  if( $username ne '' ) {
+    # Existing user login; check the password that was entered.
+    if( $self->authenticate($username, $password) ) {
+      $self->redirect_to($return_to_url);
+      return;
+    } else {
+      # Redisplay the login form with an error message.
+      $self->stash(
+        error_message => 'Login failed'
+      );
+      return;
+    }
+  }
+
+  # Register a new user.
+
+  # Make sure the email address isn't already being used.
+  my $db = Giftreg::DB->connect();
+  my @users = $db->resultset('Person')->search({
+    email_address => $newuser_username,
+  });
+  if( @users ) {
     $self->stash(
-      error_message => 'Login failed'
+      error_message => 'The email address you entered is already in use.'
     );
     return;
   }
+
+  # Make sure the both password fields are present and match.
+  if( $newuser_password eq '' || $newuser_password_confirm eq '' ) {
+    $self->stash(
+      error_message => 'You must enter a password in both fields.'
+    );
+    return;
+  } 
+  if( $newuser_password ne $newuser_password_confirm ) {
+    $self->stash(
+      error_message => 'The passwords you entered do not match.'
+    );
+    return;
+  }
+
+  # Add the new user to the database.
+  $db->resultset('Person')->create({
+    email_address => $newuser_username,
+    password      => hash($newuser_password),
+  });
+  $self->flash(
+    message => 'Your account has been created.'
+  );
+  # Log the new user in.
+  $self->authenticate($newuser_username, $newuser_password);
+  $self->redirect_to($return_to_url);
 }
 
 # Named so as not to conflict with the 'logout' helper.
