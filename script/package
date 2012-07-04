@@ -1,0 +1,24 @@
+#!/bin/sh
+#drwxr-xr-x 2 jlouder family 4096 2012-02-24 13:16 db
+#-rw------- 1 jlouder family  655 2012-01-04 15:05 giftreg.conf
+#-rw------- 1 jlouder family  507 2012-02-24 13:05 giftreg.testing.conf
+#-rw------- 1 jlouder family  235 2012-01-04 08:59 giftreg.testing.conf.sqlite
+#drwxr-xr-x 4 jlouder family 4096 2012-02-24 13:41 lib
+#drwxr-xr-x 2 jlouder family 4096 2012-01-03 13:25 log
+#drwxr-xr-x 4 jlouder family 4096 2012-01-19 21:03 public
+#-rw-r--r-- 1 jlouder family  487 2011-12-20 14:08 README.routing
+#drwxr-xr-x 2 jlouder family 4096 2012-07-04 12:38 script
+#drwxr-xr-x 2 jlouder family 4096 2012-02-29 11:08 t
+#drwxr-xr-x 8 jlouder family 4096 2012-01-14 13:51 templates
+#-rw-r--r-- 1 jlouder family   92 2012-02-22 15:22 TODO
+
+TIMESTAMP=$( date '+%Y%m%d%H%M%S' )
+TARFILE=/tmp/giftreg-$TIMESTAMP.tar.gz
+
+TOPDIR=$( dirname $0 )/..
+cd $TOPDIR
+
+tar --exclude='log/*' -zcf $TARFILE giftreg.conf lib log public \
+  script/giftreg templates
+
+ls -lh $TARFILE
