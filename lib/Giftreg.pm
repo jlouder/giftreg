@@ -46,6 +46,19 @@ sub startup {
   # time.
   srand(time ^ ($$ + ($$ << 15)));
 
+  # If 'base_path' is defined in the configuration, we're behind a reverse
+  # proxy. Set the base path to this value so that we compute relative
+  # URLs correctly.
+  if( defined $config->{base_path} ) {
+    $self->hook('before_dispatch' => sub {
+      my $self = shift;
+        
+      if ($self->req->headers->header('X-Forwarded-Host')) {
+        $self->req->url->base->path->parse($config->{base_path});
+      }
+    });
+  }
+
   # Routes
   my $r = $self->routes;
 
