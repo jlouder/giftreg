@@ -18,7 +18,9 @@ TARFILE=/tmp/giftreg-$TIMESTAMP.tar.gz
 TOPDIR=$( dirname $0 )/..
 cd $TOPDIR
 
-tar --exclude='log/*' -zcf $TARFILE giftreg.conf lib log public \
+tar --exclude='log/*' -zcf $TARFILE \
+  giftreg.conf giftreg.production.conf \
+  lib log public \
   script/giftreg templates
 
 ls -lh $TARFILE
