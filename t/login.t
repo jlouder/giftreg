@@ -46,7 +46,7 @@ $t->get_ok('/logout')->status_is(200)
 
 # Submit the form with an invalid username/password
 $t->post_form_ok('/login', {
-  username => 'person1@example.com',
+  username => 'person2@example.com',
   password => 'badpassword',
 })->status_is(200)->content_like(qr/Login failed/, 'failed login error');
 

@@ -62,7 +62,7 @@ sub validate_user {
     $user->password(hash($cleartext_password));
     $user->update();
 
-    return undef unless $password = $cleartext_password;
+    return undef unless $password eq $cleartext_password;
   }
 
   # User has successfully authenticated.
