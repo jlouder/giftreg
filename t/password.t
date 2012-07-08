@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 use Mojo::Base -strict;
 
-use Test::More tests => 24;
+use Test::More tests => 25;
 use Test::Mojo;
 use DBI;
 use IO::File;
@@ -74,3 +74,7 @@ $t->post_form_ok('/password/reset', {
 # Confirm the database password is hashed.
 my $user = $db->resultset('Person')->find(1);
 like($user->password, qr/\$1\$\S+\$\S+/, 'db password is hashed');
+
+# Confirm the PasswordReset table is empty.
+my $rows = $db->resultset('PasswordReset')->count();
+ok($rows == 0, 'PasswordReset table is empty after being used');

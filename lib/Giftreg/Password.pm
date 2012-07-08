@@ -86,6 +86,9 @@ sub reset {
     $pwreset->person->password(Giftreg::Auth::hash($pw1));
     $pwreset->person->update;
 
+    # Delete the secret so it can't be used again.
+    $pwreset->delete;
+
     $self->render('password/updated');
     return;
   }
