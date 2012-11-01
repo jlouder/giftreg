@@ -2,7 +2,7 @@ package Giftreg::DB::Person;
 use base qw/DBIx::Class::Core/;
 use POSIX qw/strftime/;
 
-__PACKAGE__->load_components( qw/PK::Sequence Core/ );
+__PACKAGE__->load_components( qw/Core/ );
 __PACKAGE__->table('person');
 
 __PACKAGE__->add_columns(
