@@ -17,13 +17,13 @@ my $log_config = q(
   log4perl.appender.screen.layout = Log::Log4perl::Layout::SimpleLayout
 );
 
-my $source_db = {
-  dsn      => 'DBI:mysql:database=kringle;host=dusty',
-  username => 'kringle',
-  password => 'kringle',
+my $dest_db = {
+  dsn      => 'DBI:mysql:database=***REMOVED***;host=dusty',
+  username => '***REMOVED***',
+  password => '***REMOVED***',
 };
 
-my $dest_db = {
+my $source_db = {
   dsn      => 'DBI:Oracle:DEV',
   username => 'GIFTREG_APP',
   password => 's0mepassw0rd',
@@ -143,27 +143,21 @@ $dest_dbh = DBI->connect($dest_db->{dsn}, $dest_db->{username},
                             $dest_db->{password}, { RaiseError => 1 });
 $log->info("connected to destination db");
 
-CopyTable('user', 'GIFTREG_SCHEMA.PERSON', {
-  uid           => 'PERSON_ID',
-  email_address => 'EMAIL_ADDRESS',
-  password      => 'PASSWORD',
-  last_updated  => 'LAST_UPDATE_DT',
-}, {
-#  LAST_UPDATE_DT => q(TO_DATE(?, 'YYYY-MM-DD'))
-  LAST_UPDATE_DT => q{(TO_DATE(?, 'YYYY-MM-DD') - TO_DATE('1970-01-01', 'YYYY-MM-DD')) * 86400}
+CopyTable('GIFTREG_SCHEMA.PERSON', 'person', {
+  PERSON_ID      => 'person_id',
+  EMAIL_ADDRESS  => 'email_address',
+  PASSWORD       => 'password',
+  LAST_UPDATE_DT => 'last_update_dt',
 });
 
-CopyTable('gift', 'GIFTREG_SCHEMA.GIFT', {
-  gid          => 'GIFT_ID',
-  short_desc   => 'SHORT_DESC',
-  long_desc    => 'LONG_DESC',
-  available_at => 'LOCATION',
-  wanted_by    => 'WANTED_BY_PERSON_ID',
-  bought_by    => 'BOUGHT_BY_PERSON_ID',
-  priority     => 'PRIORITY_NBR',
+CopyTable('GIFTREG_SCHEMA.GIFT', 'gift', {
+  GIFT_ID             => 'gift_id',
+  SHORT_DESC          => 'short_desc',
+  LONG_DESC           => 'long_desc',
+  LOCATION            => 'location',
+  WANTED_BY_PERSON_ID => 'wanted_by_person_id',
+  BOUGHT_BY_PERSON_ID => 'bought_by_person_id',
+  PRIORITY_NBR        => 'priority_nbr',
 });
-
-SetSequenceNextval('GIFTREG_SCHEMA.PERSON', 'PERSON_ID', 'GIFTREG_SCHEMA.PERSON_ID_SEQ');
-SetSequenceNextval('GIFTREG_SCHEMA.GIFT', 'GIFT_ID', 'GIFTREG_SCHEMA.GIFT_ID_SEQ');
 
 $log->info("finished");
