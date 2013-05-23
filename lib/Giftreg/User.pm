@@ -24,7 +24,7 @@ sub view {
   my $db = Giftreg::DB->connect();
   my @gifts = $db->resultset('Gift')->search(
     { wanted_by_person_id => $uid },
-    { order_by  => [ 'bought_by_person_id DESC', 'priority_nbr ASC' ] },
+    { order_by  => [ 'bought_by_person_id ASC', 'priority_nbr ASC' ] },
   );
   my $user = $db->resultset('Person')->find($uid);
   $self->stash(gifts => \@gifts);
