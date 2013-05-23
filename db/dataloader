@@ -18,9 +18,9 @@ my $log_config = q(
 );
 
 my $dest_db = {
-  dsn      => 'DBI:mysql:database=giftreg_test;host=dusty',
-  username => 'giftreg_test',
-  password => 'giftreg_test',
+  dsn      => 'DBI:mysql:database=giftreg;host=dusty',
+  username => 'giftreg',
+  password => 'wrQ0weZ43f7SmDzPJc7xYnuNx',
 };
 
 my $source_db = {
