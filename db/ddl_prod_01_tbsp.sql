@@ -1,0 +1,15 @@
+CREATE TABLESPACE GIFTREG_DTS
+	DATAFILE '/opt/oracle/oradata/DEV/giftreg_dts_01.dbf' SIZE 100M AUTOEXTEND OFF
+/
+
+CREATE TABLESPACE GIFTREG_ITS
+	DATAFILE '/opt/oracle/oradata/DEV/giftreg_its_01.dbf' size 10M AUTOEXTEND OFF
+/
+
+CREATE TABLESPACE GIFTREG_USERS
+	DATAFILE '/opt/oracle/oradata/DEV/giftreg_users_01.dbf' size 10M AUTOEXTEND OFF
+/
+
+CREATE TEMPORARY TABLESPACE GIFTREG_TEMP
+	TEMPFILE '/opt/oracle/oradata/DEV/giftreg_temp_01.dbf' size 10M AUTOEXTEND OFF
+/

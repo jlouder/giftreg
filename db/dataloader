@@ -1,0 +1,169 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+use Log::Log4perl qw( get_logger );
+use DBI;
+use Data::Dumper;
+
+### BEGIN CONFIGURATION
+#
+
+my $log_config = q(
+  log4perl.rootLogger = DEBUG, screen
+
+  log4perl.appender.screen        = Log::Log4perl::Appender::Screen
+  log4perl.appender.screen.stderr = 0
+  log4perl.appender.screen.layout = Log::Log4perl::Layout::SimpleLayout
+);
+
+my $source_db = {
+  dsn      => 'DBI:mysql:database=kringle;host=dusty',
+  username => 'kringle',
+  password => 'kringle',
+};
+
+my $dest_db = {
+  dsn      => 'DBI:Oracle:DEV',
+  username => 'GIFTREG_APP',
+  password => 's0mepassw0rd',
+};
+
+$ENV{'TNS_ADMIN'} = '/opt/oracle/instantclient_11_2';
+
+#
+### END CONFIGURATION
+
+my ($source_dbh, $dest_dbh);
+
+# Sets a sequence in the destination database so that the next value
+# fetched will be larger than the maximum value in a column of a table.
+sub SetSequenceNextval {
+  my ($table, $column, $sequence) = @_;
+  my $log = get_logger((caller(0))[3]);
+
+  $log->info("setting nextval for sequence $sequence");
+
+  # Get the maximum column value.
+  my $row = $dest_dbh->selectrow_arrayref(
+    "SELECT MAX($column) FROM $table"
+  );
+  my $max_column_value = $row->[0];
+  if( !defined $max_column_value ) {
+    $log->warn("no column values for $table.$column, " .
+               "not altering sequence $sequence");
+    return;
+  }
+  $log->debug("max($column) in $table is $max_column_value");
+
+  # Get the next value from the sequence, then alter the 'INCREMENT BY'
+  # so the next select makes it the maximum column value, then do that select.
+  $row = $dest_dbh->selectrow_arrayref("SELECT $sequence.NEXTVAL FROM DUAL");
+  my $sequence_nextval = $row->[0];
+  if( !defined $sequence_nextval ) {
+    $log->error("can't get nextval for sequence $sequence");
+    return;
+  }
+  $log->debug("nextval for sequence $sequence is $sequence_nextval");
+
+  my $difference = $max_column_value - $sequence_nextval;
+  $log->debug("setting increment by (temporarily) to $difference");
+  $dest_dbh->do("ALTER SEQUENCE $sequence INCREMENT BY $difference");
+  $dest_dbh->selectrow_arrayref("SELECT $sequence.NEXTVAL FROM DUAL");
+  $dest_dbh->do("ALTER SEQUENCE $sequence INCREMENT BY 1");
+
+  $log->info("nextval for sequence $sequence will be ",
+             $max_column_value + 1);
+}
+
+sub CopyTable {
+  my ($source_table, $dest_table, $column_mapping, $insert_for_column) = @_;
+  if( !defined $insert_for_column ) {
+    $insert_for_column = {};
+  }
+  my $log = get_logger((caller(0))[3]);
+
+  $log->info("copying table $source_table to $dest_table");
+
+  # The column mapping is from source to destination, but make a version
+  # that does the reverse.
+  my %dest_column_for = %{$column_mapping};
+  my %src_column_for =
+    map { $column_mapping->{$_} => $_ } keys %{$column_mapping};
+  # Column lists, for convenience.
+  my @src_columns = keys %dest_column_for;
+  my @dest_columns = keys %src_column_for;
+
+  # Prepare the select statement for the source table.
+  my $select_sql = 'SELECT ' . join(', ', @src_columns) .
+                   " FROM $source_table";
+  $log->debug($select_sql);
+  my $select_sth = $source_dbh->prepare($select_sql);
+
+  # Prepare the insert statement for the destination table.
+  my $insert_sql = "INSERT INTO $dest_table (" . join(', ', @dest_columns) .
+                   ') VALUES (' . join(', ', map {
+                     $insert_for_column->{$_} || '?'
+                   } @dest_columns) . ')';
+  $log->debug($insert_sql);
+  my $insert_sth = $dest_dbh->prepare($insert_sql);
+
+  # Loop through each row in the source table, inserting it into the
+  # destination table. This isn't terribly efficient, but the tables are
+  # hopefully small.
+  my $rows = 0;
+  $select_sth->execute;
+  while( my $row = $select_sth->fetchrow_hashref ) {
+    # Use the row results as the bind values for the insert statement, but
+    # convert any undef values to 'NULL'.
+    my @bind_values = map {
+      $row->{$src_column_for{$_}};
+    } @dest_columns;
+
+    $insert_sth->execute(@bind_values);
+
+    $rows++;
+  }
+
+  $log->info("inserted $rows rows into $dest_table");
+}
+
+
+# main()
+
+Log::Log4perl::init(\$log_config);
+my $log = get_logger('');
+
+# Connect to both source and destination databases.
+$source_dbh = DBI->connect($source_db->{dsn}, $source_db->{username},
+                              $source_db->{password}, { RaiseError => 1 });
+$log->info("connected to source db");
+
+$dest_dbh = DBI->connect($dest_db->{dsn}, $dest_db->{username},
+                            $dest_db->{password}, { RaiseError => 1 });
+$log->info("connected to destination db");
+
+CopyTable('user', 'GIFTREG_SCHEMA.PERSON', {
+  uid           => 'PERSON_ID',
+  email_address => 'EMAIL_ADDRESS',
+  password      => 'PASSWORD',
+  last_updated  => 'LAST_UPDATE_DT',
+}, {
+#  LAST_UPDATE_DT => q(TO_DATE(?, 'YYYY-MM-DD'))
+  LAST_UPDATE_DT => q{(TO_DATE(?, 'YYYY-MM-DD') - TO_DATE('1970-01-01', 'YYYY-MM-DD')) * 86400}
+});
+
+CopyTable('gift', 'GIFTREG_SCHEMA.GIFT', {
+  gid          => 'GIFT_ID',
+  short_desc   => 'SHORT_DESC',
+  long_desc    => 'LONG_DESC',
+  available_at => 'LOCATION',
+  wanted_by    => 'WANTED_BY_PERSON_ID',
+  bought_by    => 'BOUGHT_BY_PERSON_ID',
+  priority     => 'PRIORITY_NBR',
+});
+
+SetSequenceNextval('GIFTREG_SCHEMA.PERSON', 'PERSON_ID', 'GIFTREG_SCHEMA.PERSON_ID_SEQ');
+SetSequenceNextval('GIFTREG_SCHEMA.GIFT', 'GIFT_ID', 'GIFTREG_SCHEMA.GIFT_ID_SEQ');
+
+$log->info("finished");
