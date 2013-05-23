@@ -18,8 +18,8 @@ my $log_config = q(
 );
 
 my $dest_db = {
-  dsn      => 'DBI:mysql:database=***REMOVED***;host=dusty',
-  username => '***REMOVED***',
+  dsn      => 'DBI:mysql:database=giftreg;host=dusty',
+  username => 'giftreg',
   password => '***REMOVED***',
 };
 
