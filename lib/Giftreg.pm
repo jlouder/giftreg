@@ -20,6 +20,7 @@ sub startup {
     dsn      => $config->{db}->{dsn},
     username => $config->{db}->{username},
     password => $config->{db}->{password},
+    options  => $config->{db}->{options},
   });
 
   # Overload the connect() method of our DBIx::Class schema, so we don't have
