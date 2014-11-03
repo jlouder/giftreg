@@ -43,4 +43,10 @@ sub last_update_dt {
   return strftime('%B %d, %Y', gmtime($self->_last_update_dt))
 }
 
+sub unbought_gifts {
+  my $self = shift;
+
+  return grep { ! $_->is_bought } $self->gifts;
+}
+
 1;

@@ -4,89 +4,68 @@ use Giftreg::DB;
 
 sub add_helpers {
   my $self = shift;
-  # Prints the un-buy button and link, or nothing, depending on who's logged in.
-  $self->app->helper(unbuy_button => sub {
+
+  $self->app->helper(can_unbuy => sub {
     my ($self, $gift) = @_;
-  
-    # Anonymous users never see the button.
-    return '' unless $self->user_exists;
-  
-    # Don't show the button if the gift is not bought.
-    return '' unless $gift->is_bought;
-  
+
+    # Anonymous users can't unbuy
+    return 0 unless $self->user_exists;
+
+    # Can't unbuy if the gift isn't already bought
+    return 0 unless $gift->is_bought;
+
     # Show the button for gifts bought by the currently logged-in user,
     # or for everything if this user owns the list.
     if( $self->user->person_id == $gift->wanted_by_person_id ||
         $self->user->person_id == $gift->bought_by_person_id ) {
-      my $link_url = $self->url_for('/gift/unbuy/' . $gift->gift_id);
-      return qq{<a href="$link_url" class="button">Unbuy</a>};
+      return 1;
     }
-  
-    return '';
+
+    return 0;
   });
   
-  # Prints the edit button.
-  $self->app->helper(edit_button => sub {
+  $self->app->helper(can_edit => sub {
+    my ($self, $gift) = @_;
+
+    # Anonymous users can't edit.
+    return 0 unless $self->user_exists;
+
+    # Don't allow editing if the gift is bought (users should unbuy first).
+    return 0 if $gift->is_bought;
+
+    if( $self->user->person_id == $gift->wanted_by_person_id ) {
+      return 1;
+    }
+
+    return 0;
+  });
+  
+  $self->app->helper(can_delete => sub {
     my ($self, $gift) = @_;
   
-    # Anonymous users never see the button.
-    return '' unless $self->user_exists;
-
-    # Don't show the button if the gift is bought (users should unbuy first).
-    return '' if $gift->is_bought;
+    return 0 unless $self->user_exists;
   
     if( $self->user->person_id == $gift->wanted_by_person_id ) {
-      my $link_url = $self->url_for('/gift/edit/' . $gift->gift_id);
-      return qq{<a href="$link_url" class="button">Edit</a>};
+      return 1;
     }
   
-    return '';
-  });
-  
-  # Prints the delete button.
-  $self->app->helper(delete_button => sub {
-    my ($self, $gift) = @_;
-  
-    return '' unless $self->user_exists;
-  
-    if( $self->user->person_id == $gift->wanted_by_person_id ) {
-      my $link_url = $self->url_for('/gift/delete/' . $gift->gift_id);
-      return qq!<a href="$link_url" class="button" ! .
-             qq!onclick="if(confirm('Are you sure you want to delete this gift?')){return true;}else{return false;}">Delete</a>!;
-    }
-  
-    return '';
+    return 0;
   });
 
-  # Prints the buy button.
-  $self->app->helper(buy_button => sub {
+  $self->app->helper(can_buy => sub {
     my ($self, $gift) = @_;
   
-    return '' if $gift->is_bought;
-  
-    my $link_url = $self->url_for('/gift/buy/' . $gift->gift_id);
-    my $link_text=qq{<a href="$link_url" class="button">Buy</a>};
+    return 0 if $gift->is_bought;
   
     if( !$self->user_exists ) {
-      return $link_text;
+      return 1;
     }
   
     if( $self->user->person_id == $gift->wanted_by_person_id ) {
-      return '';
+      return 0;
     }
   
-    return $link_text;
-  });
-  
-  # Prints the bought message, for bought gifts the user can't unbuy.
-  $self->app->helper(bought_message => sub {
-    my ($self, $gift) = @_;
-  
-    if( $gift->is_bought && $self->unbuy_button($gift) eq '' ) {
-      return 'Already bought';
-    }
-  
-    return '';
+    return 1;
   });
 }
 

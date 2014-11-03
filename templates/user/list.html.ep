@@ -1,10 +1,20 @@
 % layout 'default';
 % title 'Select a user';
-<h2>Select a user</h2>
-<p>The users are:</p>
-<ul>
-% foreach my $user (@$users) {
-  <li><%= link_to $user->email_address =>
-                  "/user/view/" . $user->person_id %></li>
-% }
-</ul>
+<div class="row">
+  <div class="col-md-6 col-md-offset-3 col-xs-12">
+    <h2>Select a user</h2>
+  </div>
+</div>
+<div class="row">
+  <div class="col-md-6 col-md-offset-3 col-xs-12">
+    <div class="list-group">
+      % foreach my $user (@$users) {
+      <a class="list-group-item"
+        href="<%= url_for '/user/view/' . $user->person_id %>">
+        <%= $user->email_address %>
+        <span class="badge"><%= scalar $user->unbought_gifts %></span>
+      </a>
+      % }
+    </div>
+  </div>
+</div>
