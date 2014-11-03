@@ -20,7 +20,7 @@ my $log_config = q(
 my $dest_db = {
   dsn      => 'DBI:mysql:database=giftreg;host=dusty',
   username => 'giftreg',
-  password => 'wrQ0weZ43f7SmDzPJc7xYnuNx',
+  password => '***REMOVED***',
 };
 
 my $source_db = {
