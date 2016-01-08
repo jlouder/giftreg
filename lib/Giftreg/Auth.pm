@@ -1,7 +1,7 @@
 package Giftreg::Auth;
 use Mojo::Base 'Mojolicious::Controller';
 use Giftreg::DB;
-use Digest::SHA1 qw(sha1_hex);
+use Digest::SHA qw(sha1_hex);
 
 # SUBROUTINE:  load_user($app, $uid)
 # DESCRIPTION: Looks up the user $uid from the database. This is intended
