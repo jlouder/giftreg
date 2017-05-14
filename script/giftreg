@@ -22,4 +22,4 @@ EOF
 $ENV{MOJO_APP} ||= 'Giftreg';
 
 # Start commands
-Mojolicious::Commands->start;
+Mojolicious::Commands->start_app($ENV{MOJO_APP});
