@@ -32,12 +32,12 @@ $db->populate('Gift', [
 $t->get_ok('/login')->status_is(200);
 
 # Submit the form with a valid username/password
-$t->max_redirects(1);
-$t->post_form_ok('/login', {
+$t->ua->max_redirects(1);
+$t->post_ok('/login', form => {
   username => 'person1@example.com',
   password => 'person1',
 })->status_is(200)  # follows redirect
-  ->content_like(qr/Welcome, person1\@example\.com/, 'username in header');
+  ->content_like(qr/Logout/, 'logout link present');
 
 # Now, log out
 $t->get_ok('/logout')->status_is(200)
@@ -45,14 +45,14 @@ $t->get_ok('/logout')->status_is(200)
   ->content_like(qr/Login/, 'login link present');
 
 # Submit the form with an invalid username/password
-$t->post_form_ok('/login', {
+$t->post_ok('/login', form => {
   username => 'person2@example.com',
   password => 'badpassword',
 })->status_is(200)->content_like(qr/Login failed/, 'failed login error');
 
 # Create a new user ...
 # ... with an email address that is already in use
-$t->post_form_ok('/login', {
+$t->post_ok('/login', form => {
   newuser_username         => 'person1@example.com',
   newuser_password         => 'newpassword',
   newuser_password_confirm => 'newpassword',
@@ -60,13 +60,13 @@ $t->post_form_ok('/login', {
                                  'register duplicate user');
 
 # ... without a password
-$t->post_form_ok('/login', {
+$t->post_ok('/login', form => {
   newuser_username         => 'person3@example.com',
 })->status_is(200)->content_like(qr/enter a password/i,
                                  'register user without password');
 
 # ... with passwords that don't match
-$t->post_form_ok('/login', {
+$t->post_ok('/login', form => {
   newuser_username         => 'person3@example.com',
   newuser_password         => 'newpassword',
   newuser_password_confirm => 'differentpassword',
@@ -74,13 +74,13 @@ $t->post_form_ok('/login', {
                                  'new user passwords do not match');
 
 # ... correctly
-$t->post_form_ok('/login', {
+$t->post_ok('/login', form => {
   newuser_username         => 'person3@example.com',
   newuser_password         => 'newpassword',
   newuser_password_confirm => 'newpassword',
 })->status_is(200)->content_like(qr/account has been created/i,
                                  'register new user')
-  ->content_like(qr/Welcome, person3\@example\.com/, 'new user is logged in');
+  ->content_like(qr/Logout/, 'new user is logged in');
 
 # Confirm the new user's database password is hashed.
 my @users = $db->resultset('Person')->search({

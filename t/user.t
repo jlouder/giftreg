@@ -36,7 +36,7 @@ $t->get_ok('/user/view/1')->status_is(200)
   ->content_like(qr/Already bought/i, 'gift 2 is bought');
 
 # Log in as the list owner
-$t->post_form_ok('/login', {
+$t->post_ok('/login', form => {
   username => 'person1@example.com',
   password => 'person1',
 });

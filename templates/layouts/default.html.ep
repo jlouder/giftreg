@@ -36,7 +36,7 @@
         <li><%= link_to 'Browse Gift Lists' => '/' %></li>
         <li><%= link_to 'Edit Your List' => '/user/edit' %></li>
         <li>
-% if( $self->user_exists ) {
+% if( $self->is_user_authenticated ) {
           <a href="<%= url_for '/logout' %>">Logout</a>
 % } else {
           <%= link_to 'Login' => '/login' %>

@@ -34,7 +34,7 @@ $db->resultset('PasswordReset')->delete_all;
 $t->get_ok('/password/forgot')->status_is(200);
 
 # Submit the form
-$t->post_form_ok('/password/mailresetlink', {
+$t->post_ok('/password/mailresetlink', form => {
   email_address => 'person1@example.com',
 })->status_is(200);
 
@@ -58,14 +58,14 @@ $t->get_ok("/password/reset/$secret")->status_is(200)
   ->content_like(qr/person1\@example\.com/);
 
 # Submit the reset form with different passwords
-$t->post_form_ok('/password/reset', {
+$t->post_ok('/password/reset', form => {
   secret           => $secret,
   password         => 'one',
   confirm_password => 'two',
 })->status_is(200)->content_like(qr/do not match/i);
 
 # Submit the reset form properly
-$t->post_form_ok('/password/reset', {
+$t->post_ok('/password/reset', form => {
   secret           => $secret,
   password         => 'newpassword',
   confirm_password => 'newpassword',

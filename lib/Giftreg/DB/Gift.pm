@@ -1,6 +1,5 @@
 package Giftreg::DB::Gift;
 use base qw/DBIx::Class::Core/;
-use feature qw/switch/;
 
 __PACKAGE__->load_components( qw/Core/ );
 __PACKAGE__->table('gift');
@@ -49,13 +48,18 @@ __PACKAGE__->belongs_to('bought_by', => 'Giftreg::DB::Person',
 sub priority_desc {
   my $self = shift;
 
-  given($self->priority_nbr) {
-    when (1) { return "Highest"; }
-    when (2) { return "High";    }
-    when (3) { return "Medium";  }
-    when (4) { return "Low";     }
-    when (5) { return "Lowest";  }
-    default  { return "Unknown"; }
+  if($self->priority_nbr == 1) {
+    return "Highest";
+  } elsif($self->priority_nbr == 2) {
+    return "High";
+  } elsif($self->priority_nbr == 3) {
+    return "Medium";
+  } elsif($self->priority_nbr == 4) {
+    return "Low";
+  } elsif($self->priority_nbr == 5) {
+    return "Lowest";
+  } else  {
+    return "Unknown";
   }
 }
 

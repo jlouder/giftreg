@@ -76,7 +76,7 @@ sub validate_user {
 sub require_login {
   my $self = shift;
 
-  if( $self->user_exists() ) {
+  if( $self->is_user_authenticated() ) {
     return 1;
   } else {
     $self->flash( return_to_url => $self->req->url->to_string );
@@ -88,7 +88,7 @@ sub require_login {
 sub check {
   my $self = shift;
 
-  if( $self->user_exists() ) {
+  if( $self->is_user_authenticated() ) {
     $self->app->log->debug('auth check: user is logged in');
     return 1;
   } else {

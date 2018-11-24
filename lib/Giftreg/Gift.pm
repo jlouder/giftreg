@@ -9,15 +9,15 @@ sub add_helpers {
     my ($self, $gift) = @_;
 
     # Anonymous users can't unbuy
-    return 0 unless $self->user_exists;
+    return 0 unless $self->is_user_authenticated;
 
     # Can't unbuy if the gift isn't already bought
     return 0 unless $gift->is_bought;
 
     # Show the button for gifts bought by the currently logged-in user,
     # or for everything if this user owns the list.
-    if( $self->user->person_id == $gift->wanted_by_person_id ||
-        $self->user->person_id == $gift->bought_by_person_id ) {
+    if( $self->current_user->person_id == $gift->wanted_by_person_id ||
+        $self->current_user->person_id == $gift->bought_by_person_id ) {
       return 1;
     }
 
@@ -28,12 +28,12 @@ sub add_helpers {
     my ($self, $gift) = @_;
 
     # Anonymous users can't edit.
-    return 0 unless $self->user_exists;
+    return 0 unless $self->is_user_authenticated;
 
     # Don't allow editing if the gift is bought (users should unbuy first).
     return 0 if $gift->is_bought;
 
-    if( $self->user->person_id == $gift->wanted_by_person_id ) {
+    if( $self->current_user->person_id == $gift->wanted_by_person_id ) {
       return 1;
     }
 
@@ -43,9 +43,9 @@ sub add_helpers {
   $self->app->helper(can_delete => sub {
     my ($self, $gift) = @_;
   
-    return 0 unless $self->user_exists;
+    return 0 unless $self->is_user_authenticated;
   
-    if( $self->user->person_id == $gift->wanted_by_person_id ) {
+    if( $self->current_user->person_id == $gift->wanted_by_person_id ) {
       return 1;
     }
   
@@ -57,11 +57,11 @@ sub add_helpers {
   
     return 0 if $gift->is_bought;
   
-    if( !$self->user_exists ) {
+    if( !$self->is_user_authenticated ) {
       return 1;
     }
   
-    if( $self->user->person_id == $gift->wanted_by_person_id ) {
+    if( $self->current_user->person_id == $gift->wanted_by_person_id ) {
       return 0;
     }
   
@@ -89,8 +89,8 @@ sub unbuy {
 
   $prev_url = '/user/view/' . $gift->wanted_by_person_id;
 
-  if( $gift->wanted_by_person_id != $self->user->person_id &&
-      $gift->bought_by_person_id != $self->user->person_id ) {
+  if( $gift->wanted_by_person_id != $self->current_user->person_id &&
+      $gift->bought_by_person_id != $self->current_user->person_id ) {
     $self->flash('error_message' => 'You can only unbuy gifts you bought ' .
                  'or gifts on your list.');
     $self->redirect_to($prev_url);
@@ -102,8 +102,8 @@ sub unbuy {
   $self->flash('message' => 'The gift you selected has been unbought.');
 
   # Update the user's last_update_dt time.
-  $self->user->last_update_dt(time);
-  $self->user->update;
+  $self->current_user->last_update_dt(time);
+  $self->current_user->update;
 
   $self->redirect_to($prev_url);
 }
@@ -134,7 +134,7 @@ sub buy {
     return;
   }
 
-  $gift->bought_by_person_id($self->user->person_id);
+  $gift->bought_by_person_id($self->current_user->person_id);
   $gift->update;
   $self->flash('message' => 'The gift you selected has been bought.');
   $self->redirect_to($prev_url);
@@ -159,7 +159,7 @@ sub edit {
 
   $next_url = '/user/view/' . $gift->wanted_by_person_id;
 
-  if( $gift->wanted_by_person_id != $self->user->person_id ) {
+  if( $gift->wanted_by_person_id != $self->current_user->person_id ) {
     $self->flash('error_message' => 'You can only edit gifts on your list.');
     $self->redirect_to($next_url);
     return;
@@ -185,7 +185,7 @@ sub delete {
     return;
   }
 
-  if( $gift->wanted_by_person_id != $self->user->person_id ) {
+  if( $gift->wanted_by_person_id != $self->current_user->person_id ) {
     $self->flash('error_message' => 'You can only delete gifts on your list.');
     $self->redirect_to('/user/view/' . $gift->wanted_by_person_id);
     return;
@@ -195,10 +195,10 @@ sub delete {
   $self->flash('message' => 'The gift you selected has been deleted.');
 
   # Update the user's last_update_dt time.
-  $self->user->last_update_dt(time);
-  $self->user->update;
+  $self->current_user->last_update_dt(time);
+  $self->current_user->update;
 
-  $self->redirect_to('/user/view/' . $self->user->person_id);
+  $self->redirect_to('/user/view/' . $self->current_user->person_id);
 }
 
 sub save {
@@ -221,7 +221,7 @@ sub save {
       return;
     }
   
-    if( $gift->wanted_by_person_id != $self->user->person_id ) {
+    if( $gift->wanted_by_person_id != $self->current_user->person_id ) {
       $self->flash('error_message' => 'You can only edit gifts on your list.');
       $self->redirect_to($next_url);
       return;
@@ -251,7 +251,7 @@ sub save {
       long_desc           => $self->param('long_desc'),
       location            => $self->param('location'),
       priority_nbr        => $self->param('priority_nbr'),
-      wanted_by_person_id => $self->user->person_id,
+      wanted_by_person_id => $self->current_user->person_id,
     });
   } else {
     foreach my $field ( qw( short_desc long_desc location priority_nbr ) ) {
@@ -261,11 +261,11 @@ sub save {
   }
 
   # Update the user's last_update_dt time.
-  $self->user->last_update_dt(time);
-  $self->user->update;
+  $self->current_user->last_update_dt(time);
+  $self->current_user->update;
 
   $self->flash('message' => 'The gift you edited has been saved.');
-  $self->redirect_to('/user/view/' . $self->user->person_id);
+  $self->redirect_to('/user/view/' . $self->current_user->person_id);
 }
 
 sub add {

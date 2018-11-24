@@ -31,8 +31,8 @@ $db->populate('Gift', [
 ]);
 
 # Log in and buy a gift
-$t->max_redirects(1);
-$t->post_form_ok('/login', {
+$t->ua->max_redirects(1);
+$t->post_ok('/login', form => {
   username => 'person2@example.com',
   password => 'person2',
 });
@@ -49,7 +49,7 @@ ok($gift->is_bought, 'gift 1 is bought in db');
 
 # Unbuy the gift just bought
 $t->get_ok('/user/view/1')->status_is(200)
-  ->content_like(qr/Unbuy/, 'unbuy button present');
+  ->content_like(qr/Un-buy/, 'unbuy button present');
 $t->get_ok('/gift/unbuy/3')->status_is(200)
   ->content_like(qr/The gift you selected is unknown/i, 'unbuy invalid gift');
 $t->get_ok('/gift/unbuy/2')->status_is(200)
@@ -69,7 +69,7 @@ $t->get_ok('/gift/edit/3')->status_is(200)
 $t->get_ok('/gift/edit/2')->status_is(200)
   ->content_like(qr/You can only edit gifts on your list/i,
                  q{edit someone else's gift});
-$t->post_form_ok('/login', {
+$t->post_ok('/login', form => {
   username => 'person1@example.com',
   password => 'person1',
 });
@@ -78,7 +78,7 @@ $t->get_ok('/gift/edit/1')->status_is(200)
 
 # Save a gift ...
 # ... already-bought gift
-$t->post_form_ok('/gift/save/2', {
+$t->post_ok('/gift/save/2', form => {
   short_desc   => 'A lovely gift',
   long_desc    => 'Something I would really like!',
   location     => 'Anywhere',
@@ -88,7 +88,7 @@ $t->post_form_ok('/gift/save/2', {
                  'save already-bought gift');
 
 # ... gift belonging to someone else
-$t->post_form_ok('/gift/save/4', {
+$t->post_ok('/gift/save/4', form => {
   short_desc   => 'A lovely gift',
   long_desc    => 'Something I would really like!',
   location     => 'Anywhere',
@@ -98,7 +98,7 @@ $t->post_form_ok('/gift/save/4', {
                  q{save someone else's gift});
 
 # ... invalid gift
-$t->post_form_ok('/gift/save/3', {
+$t->post_ok('/gift/save/3', form => {
   short_desc   => 'A lovely gift',
   long_desc    => 'Something I would really like!',
   location     => 'Anywhere',
@@ -117,7 +117,7 @@ foreach my $field ( qw( short_desc long_desc location priority_nbr ) ) {
   );
   delete $post_data{$field};
 
-  $t->post_form_ok('/gift/save/1', \%post_data)->status_is(200)
+  $t->post_ok('/gift/save/1', form => \%post_data)->status_is(200)
     ->content_like(qr/required fields missing/i, 'missing required field');
 }
 
@@ -128,7 +128,7 @@ my %post_data = (
   location     => 'Anywhere',
   priority_nbr => 1,
 );
-$t->post_form_ok('/gift/save/1', \%post_data)->status_is(200)
+$t->post_ok('/gift/save/1', form => \%post_data)->status_is(200)
   ->content_like(qr/The gift you edited has been saved/i,
                  'save valid gift');
 
@@ -155,7 +155,7 @@ sleep 1;  # guarantee next save modifies last_update_dt
   location     => 'Anywhere',
   priority_nbr => 1,
 );
-$t->post_form_ok('/gift/save/new', \%post_data)->status_is(200)
+$t->post_ok('/gift/save/new', form => \%post_data)->status_is(200)
   ->content_like(qr/The gift you edited has been saved/i,
                  'save valid gift');
 
