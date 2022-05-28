@@ -7,21 +7,21 @@ __PACKAGE__->table('person');
 
 __PACKAGE__->add_columns(
   'person_id' => {
-    data_type   => 'number',
-    sequence    => 'person_id_seq',
+    data_type         => 'number',
+    is_auto_increment => 1,
   },
   'email_address' => {
-    data_type   => 'varchar',
-    size        => 100,
+    data_type         => 'varchar',
+    size              => 100,
   },
   'password' => {
-    data_type   => 'varchar',
-    size        => 100,
+    data_type         => 'varchar',
+    size              => 100,
   },
   'last_update_dt' => {
-    data_type   => 'number',
-    is_nullable => 1,
-    accessor    => '_last_update_dt',
+    data_type         => 'number',
+    is_nullable       => 1,
+    accessor          => '_last_update_dt',
   },
 );
 

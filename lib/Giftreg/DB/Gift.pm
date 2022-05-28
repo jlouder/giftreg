@@ -7,7 +7,7 @@ __PACKAGE__->table('gift');
 __PACKAGE__->add_columns(
   'gift_id' => {
     data_type      => 'number',
-    sequence       => 'gift_id_seq',
+    is_auto_increment => 1,
   },
   'short_desc' => {
     data_type      => 'varchar',

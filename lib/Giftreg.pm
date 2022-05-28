@@ -63,26 +63,28 @@ sub startup {
   # Routes
   my $r = $self->routes;
 
-  $r->route('/login')->to('auth#login');
-  $r->route('/logout')->to('auth#do_logout');
+  $r->get('/login')->to('auth#login');
+  $r->post('/login')->to('auth#login');
+  $r->get('/logout')->to('auth#do_logout');
 
-  $r->route('/user/list')->to('user#list');
-  $r->route('/user/view/:uid')->to('user#view');
-  $r->route('/user/edit')->to('user#edit');
+  $r->get('/user/list')->to('user#list');
+  $r->get('/user/view/:uid')->to('user#view');
+  $r->get('/user/edit')->to('user#edit');
 
-  $r->route('/gift/buy/:gift_id')->to('gift#buy');
-  $r->route('/gift/unbuy/:gift_id')->to('gift#unbuy');
-  $r->route('/gift/edit/:gift_id')->to('gift#edit');
-  $r->route('/gift/save/:gift_id')->to('gift#save');
-  $r->route('/gift/delete/:gift_id')->to('gift#delete');
-  $r->route('/gift/add')->to('gift#add');
+  $r->get('/gift/buy/:gift_id')->to('gift#buy');
+  $r->get('/gift/unbuy/:gift_id')->to('gift#unbuy');
+  $r->get('/gift/edit/:gift_id')->to('gift#edit');
+  $r->post('/gift/save/:gift_id')->to('gift#save');
+  $r->get('/gift/delete/:gift_id')->to('gift#delete');
+  $r->get('/gift/add')->to('gift#add');
 
-  $r->route('/password/forgot')->to('password#forgot');
-  $r->route('/password/mailresetlink')->to('password#mailresetlink');
-  $r->route('/password/reset/:secret')->to('password#reset');
-  $r->route('/password/reset')->to('password#reset');
+  $r->get('/password/forgot')->to('password#forgot');
+  $r->post('/password/mailresetlink')->to('password#mailresetlink');
+  $r->get('/password/reset/:secret')->to('password#reset');
+  $r->get('/password/reset')->to('password#reset');
+  $r->post('/password/reset')->to('password#reset');
 
-  $r->route('/')->to('user#list');
+  $r->get('/')->to('user#list');
 }
 
 1;
