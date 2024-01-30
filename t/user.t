@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 use Mojo::Base -strict;
 
-use Test::More tests => 12;
+use Test::More tests => 15;
 use Test::Mojo;
 use DBI;
 
@@ -42,3 +42,8 @@ $t->post_ok('/login', form => {
 });
 $t->get_ok('/user/view/1')->status_is(200)
   ->content_like(qr/Unbuy/i, 'unbuy link for owner');
+
+# Try to view a user who doesn't exist
+$t->ua->max_redirects(1); # follow redirect
+$t->get_ok('/user/view/999')->status_is(200)
+  ->content_like(qr/The user you selected is unknown/);

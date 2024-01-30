@@ -27,6 +27,11 @@ sub view {
     { order_by  => [ 'bought_by_person_id ASC', 'priority_nbr ASC' ] },
   );
   my $user = $db->resultset('Person')->find($uid);
+  if (!defined $user) {
+    $self->flash(error_message => 'The user you selected is unknown.');
+    $self->redirect_to('/');
+    return;
+  }
   $self->stash(gifts => \@gifts);
   $self->stash(user => $user);
 }
