@@ -42,7 +42,7 @@ sub edit {
 
   $self->require_login() or return;;
 
-  $self->redirect_to('/user/view/' . $self->user->person_id);
+  $self->redirect_to('/user/view/' . $self->current_user->person_id);
 }
 
 1;
